@@ -293,6 +293,8 @@ class Python(Task):
             config_args.append('--with-lto')
         if self.conf.jit:
             config_args.append(f'--enable-experimental-jit={self.conf.jit}')
+        if self.branch in ['py312+tail', '3.14'] and self.conf.tci:
+            config_args.append(f'--with-tail-call-interp')
         if self.conf.pkg_only:
             config_args.extend(self.get_package_only_flags())
         if self.conf.debug:
@@ -797,13 +799,14 @@ def parse_config(filename, command):
         # [scm]
         conf.repo_dir = getfile('scm', 'repo_dir')
         conf.update = getboolean('scm', 'update', True)
-        conf.git_remote = getstr('config', 'git_remote', default='remotes/origin')
+        conf.git_remote = getstr('scm', 'git_remote', default='remotes/origin')
 
         # [compile]
         conf.directory = getfile('compile', 'bench_dir')
         conf.lto = getboolean('compile', 'lto', True)
         conf.pgo = getboolean('compile', 'pgo', True)
         conf.jit = getstr('compile', 'jit', '')
+        conf.tci = getstr('compile', 'tci', '')
         conf.install = getboolean('compile', 'install', True)
         conf.pkg_only = getstr('compile', 'pkg_only', '').split()
         try:
